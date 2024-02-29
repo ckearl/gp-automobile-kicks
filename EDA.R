@@ -2,7 +2,7 @@
 library(tidyverse)
 library(lubridate)
 library(janitor)
-# library(plot_ly)
+library(plotly)
 library(ggplot2)
 
 setwd('~/byU/wint_24/is555/code/gp-automobile-kicks/')
@@ -111,7 +111,7 @@ make_bad_buy_lt_30 <- kick_df %>%
 bad_buy_prop_lt_30 <- kick_df %>% 
   filter(!(make %in% c("PLYMOUTH", "TOYOTA", "MINI", "SUBARU", "LEXUS", "CADILLAC", "ACURA", "VOLVO"))) %>%
   summarise(prop_bad_buy = mean(is_bad_buy))
-overall_bad_buy_prop_ex_less_than_30_makes <- overall_bad_buy_prop_ex_less_than_30_makes[[1]]
+bad_buy_prop_lt_30 <- bad_buy_prop_lt_30[[1]]
 
 make_bad_buy_lt_30 %>%
   ggplot(aes(x = make, y = prop_bad_buy, label = paste(total_cars, "cars"))) +
