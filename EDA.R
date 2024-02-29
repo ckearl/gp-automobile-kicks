@@ -94,6 +94,12 @@ ggplot(kick_df, aes(x = odometer, y=mmr_current_auction_average_price, color = i
     y = "MMR Current Auction Average Price"
   )
 
+## second batch EDA
+kick_df %>% 
+  ggplot(aes(x = year, fill = auction_name)) +
+  geom_density(alpha = 0.5) +
+  facet_wrap(auction_name~is_bad_buy, nrow = 3)
+
 ## extremely useful charts
 
 # Calculate the proportion of bad buys in the dataset
