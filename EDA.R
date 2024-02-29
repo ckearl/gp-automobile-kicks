@@ -42,83 +42,26 @@ kick_df <- kick_df_raw %>%
       TRUE ~ "Other"
     ),
     parent_company = case_when(
-      make %in% c("BUICK", "CADILLAC", "CHEVROLET", "GMC", "HUMMER", "OLDSMOBILE", "PONTIAC", "SATURN") ~ "General Motors",
-      make %in% c("FORD", "LINCOLN", "MERCURY") ~ "Ford Motor Company",
-      make %in% c("CHRYSLER", "DODGE", "JEEP", "PLYMOUTH") ~ "Fiat Chrysler Automobiles",
-      make %in% c("ACURA", "HONDA") ~ "Honda Motor Co.",
-      make %in% c("HYUNDAI", "KIA") ~ "Hyundai Motor Group",
-      make %in% c("MAZDA") ~ "Mazda Motor Corporation",
-      make %in% c("MITSUBISHI") ~ "Mitsubishi Motors Corporation",
-      make %in% c("NISSAN", "INFINITI") ~ "Nissan Motor Corporation",
-      make %in% c("SUBARU") ~ "Subaru Corporation",
-      make %in% c("SUZUKI") ~ "Suzuki Motor Corporation",
-      make %in% c("TOYOTA", "LEXUS", "SCION", "TOYOTA SCION") ~ "Toyota Motor Corporation",
-      make %in% c("VOLKSWAGEN") ~ "Volkswagen Group",
-      make %in% c("VOLVO") ~ "Volvo Car Group",
+      make %in% c("BUICK", "CADILLAC", "CHEVROLET", "GMC", "HUMMER", "OLDSMOBILE", "PONTIAC", "SATURN") ~ "GM",
+      make %in% c("FORD", "LINCOLN", "MERCURY") ~ "Ford",
+      make %in% c("CHRYSLER", "DODGE", "JEEP", "PLYMOUTH") ~ "Fiat-Chrysler",
+      make %in% c("ACURA", "HONDA") ~ "Honda",
+      make %in% c("HYUNDAI", "KIA") ~ "Hyundai",
+      make %in% c("MAZDA") ~ "Mazda",
+      make %in% c("MITSUBISHI") ~ "Mitsubishi",
+      make %in% c("NISSAN", "INFINITI") ~ "Nissan",
+      make %in% c("SUBARU") ~ "Subaru",
+      make %in% c("SUZUKI") ~ "Suzuki",
+      make %in% c("TOYOTA", "LEXUS", "SCION", "TOYOTA SCION") ~ "Toyota",
+      make %in% c("VOLKSWAGEN") ~ "Volkswagen",
+      make %in% c("VOLVO") ~ "Volvo",
       TRUE ~ "Other"
     )) %>% 
   select(-c(purch_date, veh_year, vehicle_age, veh_odo, wheel_type_id, byrno, vnzip1, vnst, auction, primeunit, mmr_acquisition_auction_average_price, mmr_acquisition_auction_clean_price, mmr_acquisition_retail_average_price, mmr_acquisiton_retail_clean_price, mmr_current_auction_average_price, mmr_current_auction_clean_price, mmr_current_retail_average_price, mmr_current_retail_clean_price)) %>% 
   select(id, is_bad_buy, make, top_three_american_name, parent_company, region, nationality, model, trim, sub_model, size, color, transmission, year, age, odometer, prime_unit, wheel_type, mmr_acq_auction_avg_price, mmr_acq_auction_clean_price, mmr_acq_retail_avg_price, mmr_acq_retail_clean_price, mmr_curr_auction_avg_price, mmr_curr_auction_clean_price, mmr_curr_retail_avg_price, mmr_curr_retail_clean_price, auction_name, vendor_zip, vendor_state, is_online_sale, warranty_cost, buyer_number, auction_final_cost)
 
-kick_df %>% glimpse()
 
-# Example 1: Scatterplot Matrix with Color Encoding
-pairs(kick_df[, c("is_bad_buy", "age", "odometer", "mmr_acq_auction_avg_price")], 
-      col = ifelse(kick_df$is_bad_buy == 1, "red", "blue"))
-
-# Example 2: Parallel Coordinates Plot
-kick_df %>%
-  select(-id) %>%
-  plotly::plot_ly(type = 'parcoords', line = list(color = ~is_bad_buy,
-                                                  colorscale = list(c(0,1), c('blue', 'red'))))
-
-# Example 3: Clustered Heatmap
-correlation_matrix <- cor(kick_df[, c("is_bad_buy", "age", "odometer", "mmr_acq_auction_avg_price")])
-ggplot(data = melt(correlation_matrix), aes(Var1, Var2, fill = value)) +
-  geom_tile() +
-  scale_fill_gradient2(low = "blue", high = "red") +
-  labs(x = "Variable", y = "Variable", fill = "Correlation")
-
-# Example 4: Interactive Trellis Plot
-ggplot(kick_df, aes(x = factor(is_bad_buy), fill = make)) +
-  geom_bar() +
-  facet_wrap(~region) +
-  labs(x = "Is Bad Buy", y = "Count", fill = "Make")
-
-# Example 5: Hexbin Scatterplot
-ggplot(kick_df, aes(x = age, y = mmr_acq_auction_avg_price)) +
-  geom_hex(aes(fill = is_bad_buy)) +
-  scale_fill_gradient(low = "blue", high = "red") +
-  labs(x = "Age", y = "MMR Acquisition Auction Average Price", fill = "Is Bad Buy")
-
-# Example 6: Correlation Network Plot
-library(igraph)
-correlation_graph <- graph_from_adjacency_matrix(correlation_matrix, weighted = TRUE)
-plot(correlation_graph, edge.arrow.size = 0.5, edge.curved = TRUE)
-
-# Example 7: Multiple Variable Bubble Chart
-kick_df %>% 
-  filter(region == "USA") %>% 
-  ggplot(aes(x = age, y = odometer, size = mmr_acq_auction_avg_price, color = is_bad_buy)) +
-  geom_point(alpha = 0.4) +
-  scale_color_gradient(low = "blue", high = "red") +
-  labs(x = "Age", y = "Odometer", size = "MMR Acquisition Auction Average Price", color = "Is Bad Buy")
-
-# Example 8: Interactive 3D Scatterplot
-plot_ly(kick_df, x = ~age, y = ~odometer, z = ~mmr_acq_auction_avg_price, color = ~is_bad_buy, colors = c('blue', 'red'), type = "scatter3d")
-
-# Example 9: Conditional Density Plot
-kick_df %>% 
-  ggplot(aes(x = age, fill = region)) +
-  geom_density(alpha = 0.5) +
-  facet_wrap(~is_bad_buy) +
-  labs(x = "Age", fill = "Make")
-
-# Example 10: Faceted Boxplot
-ggplot(kick_df, aes(x = factor(is_bad_buy), y = mmr_acq_auction_avg_price)) +
-  geom_boxplot() +
-  facet_wrap(~transmission) +
-  lab
+## extremely useful charts
 
 
 # Calculate the proportion of bad buys in the dataset
@@ -139,17 +82,44 @@ parent_company_bad_buy %>%
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
 
 # Example 2: Proportion of Bad Buys by Make
-make_bad_buy <- kick_df %>%
+make_bad_buy_lt_100 <- kick_df %>%
+  filter(!(make %in% c("PLYMOUTH", "TOYOTA SCION", "MINI", "SUBARU", "LEXUS", "CADILLAC", "ACURA", "VOLVO", "INFINITI", "LINCOLN", "SCION", "VOLKSWAGEN", "ISUZU"))) %>%
   group_by(make) %>%
-  summarise(prop_bad_buy = mean(is_bad_buy))
+  summarise(prop_bad_buy = mean(is_bad_buy),
+            total_cars = n())
 
-make_bad_buy %>%
-  ggplot(aes(x = make, y = prop_bad_buy)) +
+bad_buy_prop_lt_100_makes <- kick_df %>% 
+  filter(!(make %in% c("PLYMOUTH", "TOYOTA SCION", "MINI", "SUBARU", "LEXUS", "CADILLAC", "ACURA", "VOLVO", "INFINITI", "LINCOLN", "SCION", "VOLKSWAGEN", "ISUZU"))) %>%
+  summarise(prop_bad_buy = mean(is_bad_buy))
+bad_buy_prop_lt_100_makes <- bad_buy_prop_lt_100_makes[[1]]
+
+make_bad_buy_lt_100 %>%
+  ggplot(aes(x = make, y = prop_bad_buy, label = paste(total_cars, "cars"))) +
   geom_bar(stat = "identity", fill = "lightgreen") +
-  geom_hline(yintercept = overall_bad_buy_proportion, color = "red", linetype = "dashed") +
+  geom_hline(yintercept = bad_buy_prop_lt_100_makes, color = "red", linetype = "dashed") +
   labs(x = "Make", y = "Proportion of Bad Buys",
-       title = "Proportion of Bad Buys by Make",
-       subtitle = paste("Overall Proportion of Bad Buys:", round(overall_bad_buy_proportion, 3))) +
+       title = "Proportion of Bad Buys by Make, for Makes with at least 100 cars sold",
+       subtitle = paste("Overall Proportion of Bad Buys:", round(bad_buy_prop_lt_100_makes, 5))) +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+make_bad_buy_lt_30 <- kick_df %>%
+  filter(!(make %in% c("PLYMOUTH", "TOYOTA", "MINI", "SUBARU", "LEXUS", "CADILLAC", "ACURA", "VOLVO"))) %>%
+  group_by(make) %>%
+  summarise(prop_bad_buy = mean(is_bad_buy),
+            total_cars = n())
+
+bad_buy_prop_lt_30 <- kick_df %>% 
+  filter(!(make %in% c("PLYMOUTH", "TOYOTA", "MINI", "SUBARU", "LEXUS", "CADILLAC", "ACURA", "VOLVO"))) %>%
+  summarise(prop_bad_buy = mean(is_bad_buy))
+overall_bad_buy_prop_ex_less_than_30_makes <- overall_bad_buy_prop_ex_less_than_30_makes[[1]]
+
+make_bad_buy_lt_30 %>%
+  ggplot(aes(x = make, y = prop_bad_buy, label = paste(total_cars, "cars"))) +
+  geom_bar(stat = "identity", fill = "lightgreen") +
+  geom_hline(yintercept = bad_buy_prop_lt_30, color = "red", linetype = "dashed") +
+  labs(x = "Make", y = "Proportion of Bad Buys",
+       title = "Proportion of Bad Buys by Make, for Makes with at least 30 cars sold",
+       subtitle = paste("Overall Proportion of Bad Buys:", round(bad_buy_prop_lt_30, 5))) +
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
 
 # Example 3: Proportion of Bad Buys by Model
@@ -174,23 +144,23 @@ region_car_count <- kick_df %>%
   summarise(prop_bad_buy = mean(is_bad_buy),
             total_cars = n())
 
+bad_buy_prop_ex_usa <- kick_df %>% 
+  filter(region != "USA") %>% 
+  summarise(prop_bad_buy = mean(is_bad_buy))
+bad_buy_prop_ex_usa <- bad_buy_prop_ex_usa[[1]]
+
 region_car_count %>%
   ggplot(aes(x = region, y = prop_bad_buy, label = paste(total_cars, "cars"))) +
   geom_bar(stat = "identity", fill = "lightyellow") +
-  geom_hline(yintercept = overall_bad_buy_proportion_ex_usa, color = "red", linetype = "dashed") +
+  geom_hline(yintercept = bad_buy_prop_ex_usa, color = "red", linetype = "dashed") +
   geom_text(vjust = -0.5, size = 3) +
   labs(x = "Region", y = "Proportion of Bad Buys",
        title = "Proportion of Bad Buys by Region, without USA",
-       subtitle = paste("Overall Proportion of Bad Buys:", round(overall_bad_buy_proportion, 3))) +
+       subtitle = paste("Overall Proportion of Bad Buys:", round(bad_buy_prop_ex_usa, 5))) +
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
 
-overall_bad_buy_proportion_ex_usa <- kick_df %>% 
-  filter(region != "USA") %>% 
-  summarise(prop_bad_buy = mean(is_bad_buy))
-# format the code above to be a variable
-overall_bad_buy_proportion_ex_usa <- overall_bad_buy_proportion_ex_usa[[1]]
-
 ### PRACTICE with the king
+
 kick_df %>% 
   group_by(year) %>% 
   summarise(total_bad = sum(is_bad_buy == 1),
@@ -205,3 +175,29 @@ kick_df %>%
   theme_bw()
 
 
+## somewhat useful charts
+
+# Example 6: Correlation Network Plot
+library(igraph)
+correlation_graph <- graph_from_adjacency_matrix(correlation_matrix, weighted = TRUE)
+plot(correlation_graph, edge.arrow.size = 0.5, edge.curved = TRUE)
+
+# Example 7: Multiple Variable Bubble Chart
+kick_df %>% 
+  filter(region == "USA") %>% 
+  ggplot(aes(x = age, y = odometer, size = mmr_acq_auction_avg_price, color = is_bad_buy)) +
+  geom_point(alpha = 0.4) +
+  scale_color_gradient(low = "blue", high = "red") +
+  labs(x = "Age", y = "Odometer", size = "MMR Acquisition Auction Average Price", color = "Is Bad Buy")
+
+# Example 9: Conditional Density Plot
+kick_df %>% 
+  ggplot(aes(x = age, fill = region)) +
+  geom_density(alpha = 0.5) +
+  facet_wrap(~is_bad_buy) +
+  labs(x = "Age", fill = "Make")
+
+# Example 10: Faceted Boxplot
+ggplot(kick_df, aes(x = factor(is_bad_buy), y = mmr_acq_auction_avg_price)) +
+  geom_boxplot() +
+  facet_wrap(~transmission)
