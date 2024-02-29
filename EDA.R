@@ -4,6 +4,7 @@ library(lubridate)
 library(janitor)
 library(plotly)
 library(ggplot2)
+library(ggcorrplot)
 
 setwd('~/byU/wint_24/is555/code/gp-automobile-kicks/')
 
@@ -195,6 +196,25 @@ kick_df %>%
   ggplot(aes(x = year, y = total, fill = outcome_level)) +
   geom_col() +
   theme_bw()
+
+
+# Potential correlation matrix?
+selected_columns <- kick_df %>%
+  select(age, odometer, warranty_cost, mmr_acq_auction_clean_price, 
+         mmr_acq_retail_clean_price, mmr_curr_auction_clean_price, 
+         mmr_curr_retail_clean_price, auction_final_cost)
+
+# Calculate the correlation matrix
+corr_matrix <- cor(selected_columns)
+
+# Plot the correlation matrix using ggcorrplot
+ggcorrplot(corr_matrix,
+           type = "lower",
+           outline.color = "white",
+           lab = TRUE,
+           method = "square",
+           title = "Correlation Plot of Numeric Variables",
+           ggtheme = theme_minimal())
 
 
 ## somewhat useful charts
