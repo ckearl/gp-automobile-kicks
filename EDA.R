@@ -159,6 +159,28 @@ region_car_count %>%
        subtitle = paste("Overall Proportion of Bad Buys:", round(bad_buy_prop_ex_usa, 5))) +
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
 
+
+# Example 5: Proportion of Bad Buys by Year with Total Car Count Labels
+age_car_count <- kick_df %>%
+  group_by(age) %>%
+  summarise(prop_bad_buy = mean(is_bad_buy),
+            total_cars = n())
+
+age_car_count %>% 
+  ggplot(aes(x = age, y = prop_bad_buy, label = paste(total_cars, "cars"))) +
+  geom_bar(stat = "identity", fill = "lightblue") +
+  geom_hline(yintercept = overall_bad_buy_proportion, color = "red", linetype = "dashed") +
+  geom_text(vjust = -0.5, size = 3) +
+  labs(x = "Year", y = "Proportion of Bad Buys",
+       title = "Proportion of Bad Buys by Age of Vehicle",
+       subtitle = paste("Overall Proportion of Bad Buys:", round(overall_bad_buy_proportion, 3))) +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+kick_df %>% 
+  count(make) %>% 
+  arrange(desc(n)) %>% 
+  print( n=30)
+
 ### PRACTICE with the king
 
 kick_df %>% 
