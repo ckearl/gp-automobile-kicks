@@ -61,9 +61,40 @@ kick_df <- kick_df_raw %>%
   select(-c(purch_date, veh_year, vehicle_age, veh_odo, wheel_type_id, byrno, vnzip1, vnst, auction, primeunit, mmr_acquisition_auction_average_price, mmr_acquisition_auction_clean_price, mmr_acquisition_retail_average_price, mmr_acquisiton_retail_clean_price, mmr_current_auction_average_price, mmr_current_auction_clean_price, mmr_current_retail_average_price, mmr_current_retail_clean_price)) %>% 
   select(id, is_bad_buy, make, top_three_american_name, parent_company, region, nationality, model, trim, sub_model, size, color, transmission, year, age, odometer, prime_unit, wheel_type, mmr_acq_auction_avg_price, mmr_acq_auction_clean_price, mmr_acq_retail_avg_price, mmr_acq_retail_clean_price, mmr_curr_auction_avg_price, mmr_curr_auction_clean_price, mmr_curr_retail_avg_price, mmr_curr_retail_clean_price, auction_name, vendor_zip, vendor_state, is_online_sale, warranty_cost, buyer_number, auction_final_cost)
 
+## first batch EDA
+ggplot(kick_df, aes(x = is_bad_buy, fill = is_bad_buy)) +
+  geom_bar() +
+  labs(title = "Is_Bad_Buy Distribution",
+       x = "Is Bad Buy",
+       y = "Frequency") +
+  scale_fill_manual(values = c("lightgreen", "red"))
+
+ggplot(kick_df, aes(x = odometer, fill = is_bad_buy)) +
+  geom_density(alpha = 0.5) +
+  labs(title = "Odometer Distribution / Is Bad Buy",
+       x = "Odometer",
+       y = "Frequency")
+
+ggplot(kick_df, aes(x = age, fill = is_bad_buy)) +
+  geom_histogram(alpha = 0.5, binwidth = 1) +
+  labs(title = "Age Distribution / Is Bad Buy",
+       x = "Age",
+       y = "Frequency")
+
+ggplot(kick_df, aes(x = mmr_acquisition_auction_average_price, fill = is_bad_buy)) +
+  geom_density(alpha = 0.5) +
+  labs(title = "MMR Acquisition Auction Average Price Distribution / Is Bad Buy",
+       x = "MMR Acquisition Auction Average Price",
+       y = "Frequency")
+
+ggplot(kick_df, aes(x = odometer, y=mmr_current_auction_average_price, color = is_bad_buy)) +
+  geom_point(alpha=.5) +
+  labs(title = "Odometer vs MMR Current Auction Average Price",
+    x = "Odometer",
+    y = "MMR Current Auction Average Price"
+  )
 
 ## extremely useful charts
-
 
 # Calculate the proportion of bad buys in the dataset
 overall_bad_buy_proportion <- mean(kick_df$is_bad_buy)
@@ -182,7 +213,7 @@ kick_df %>%
   arrange(desc(n)) %>% 
   print( n=30)
 
-### PRACTICE with the king
+### PRACTICE with the king Prof Wilson himself
 
 kick_df %>% 
   group_by(year) %>% 
@@ -204,10 +235,8 @@ selected_columns <- kick_df %>%
          mmr_acq_retail_clean_price, mmr_curr_auction_clean_price, 
          mmr_curr_retail_clean_price, auction_final_cost)
 
-# Calculate the correlation matrix
 corr_matrix <- cor(selected_columns)
 
-# Plot the correlation matrix using ggcorrplot
 ggcorrplot(corr_matrix,
            type = "lower",
            outline.color = "white",
